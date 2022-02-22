@@ -8,6 +8,7 @@
     var process = Process.GetCurrentProcess();
     var hostName = System.Net.Dns.GetHostName();
     var ipList = await System.Net.Dns.GetHostAddressesAsync(hostName);
+    const long MiBInBytes = 1024 * 1024 * 0;
 }
 
 <div class="text-center">
@@ -37,12 +38,12 @@
             </tr>
         }
         <tr>
-            <td>Memory, current usage (bytes)</td>
-            <td>@process.WorkingSet64</td>
+            <td>Memory, current usage (Mebibytes)</td>
+            <td>@((long)process.WorkingSet64 / MiBInBytes)</td>
         </tr>
         <tr>
-            <td>Memory, max available (bytes)</td>
-            <td>@process.MaxWorkingSet</td>
+            <td>Memory, max available (Mebibytes)</td>
+            <td>@((long)process.MaxWorkingSet / MiBInBytes)</td>
         </tr>
 
         <tr>

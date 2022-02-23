@@ -2,6 +2,7 @@
 @using System.Runtime.InteropServices
 @using System.IO
 @using System.Diagnostics
+@using System.Data.SqlClient
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -44,6 +45,34 @@
         <tr>
             <td>Memory, max available (Mebibytes)</td>
             <td>@((long)process.MaxWorkingSet / MiBInBytes)</td>
+        </tr>
+        <tr>
+            @{
+                string connectionState;
+                var connString = new SqlConnectionStringBuilder
+                {
+                    DataSource = "sqlserver",
+                    InitialCatalog = "master",
+                    UserID = "sa",
+                    Password = "defi!123",
+                    ConnectTimeout = 2
+                };
+
+                try
+                {
+                    using (var conn = new SqlConnection(connString.ToString()))
+                    {
+                        conn.Open();
+                        connectionState = "Successful";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    connectionState = $"Failed: {ex}";
+                }
+            }
+            <td>Sql Connection</td>
+            <td>@connectionState</td>
         </tr>
 
         <tr>

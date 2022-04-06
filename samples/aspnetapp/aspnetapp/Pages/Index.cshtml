@@ -9,7 +9,7 @@
     var process = Process.GetCurrentProcess();
     var hostName = System.Net.Dns.GetHostName();
     var ipList = await System.Net.Dns.GetHostAddressesAsync(hostName);
-    const long MiBInBytes = 1024 * 1024 * 0;
+    const long MiBInBytes = 1024 * 1024;
 }
 
 <div class="text-center">
@@ -51,11 +51,10 @@
                 string connectionState;
                 var connString = new SqlConnectionStringBuilder
                 {
-                    DataSource = "sqlserver",
+                    DataSource = Model.SqlConfiguration.Server,
                     InitialCatalog = "master",
                     UserID = "sa",
-                    Password = "defi!123",
-                    ConnectTimeout = 2
+                    Password = Model.SqlConfiguration.Password
                 };
 
                 try

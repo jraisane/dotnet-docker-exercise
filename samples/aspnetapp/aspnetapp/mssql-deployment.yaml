@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sqlserver
+  name: sqlserver
+spec:
+  minReadySeconds: 10
+  progressDeadlineSeconds: 300
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqlserver
+  template:
+    metadata:
+      labels:
+        app: sqlserver
+    spec:
+      containers:
+      - image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          - name: ACCEPT_EULA
+            value: "Y"
+          - name: SA_PASSWORD
+            value: "Defi!123"
+        name: sqlserver
+        ports:
+        - containerPort: 1433
+          name: sql
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqlserver-service
+  labels:
+    app: sqlserver
+spec:
+  ports:
+    - port: 1433
+      targetPort: sql
+      name: sql
+  selector:
+    app: sqlserver

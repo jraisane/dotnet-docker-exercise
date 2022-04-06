@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: aspnet-exercise
+  name: aspnet-exercise
+spec:
+  minReadySeconds: 10
+  progressDeadlineSeconds: 300
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aspnet-exercise
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: aspnet-exercise
+    spec:
+      containers:
+      - image: aspnet-exercise:5
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/liveness
+            scheme: HTTP
+            port: 80
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/readiness
+            scheme: HTTP
+            port: 80
+          timeoutSeconds: 10
+        name: aspnet-exercise
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aspnet-exercise-service
+  labels:
+    app: aspnet-exercise
+spec:
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+  selector:
+    app: aspnet-exercise
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aspnet-exercise-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: "/aspnet-exercise(/|$)(.*)"
+        pathType: Prefix
+        backend:
+          service:
+            name: aspnet-exercise-service
+            port:
+              number: 80

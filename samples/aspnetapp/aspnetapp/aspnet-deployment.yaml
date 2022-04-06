@@ -22,7 +22,19 @@ spec:
         app: aspnet-exercise
     spec:
       containers:
-      - image: aspnet-exercise:5
+      - name: aspnet-exercise
+        image: aspnet-exercise:1.2
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
@@ -40,18 +52,6 @@ spec:
             scheme: HTTP
             port: 80
           timeoutSeconds: 10
-        name: aspnet-exercise
-        ports:
-        - containerPort: 80
-          name: http
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 250m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
